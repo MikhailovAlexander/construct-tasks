@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { ParseIntPipe } from '../common/pipes/parse-int.pipe';
 import { CatsService } from './cats.service';
@@ -47,7 +47,13 @@ export class CatsController {
     @Param('id', new ParseIntPipe())
     id: number,
   ): Promise<Cat> {
-    return this.catsService.findOne(id);
+    const cat = await this.catsService.findOne(id);
+
+    if (!cat) {
+      throw new NotFoundException(`Cat with id: ${id} was not found`);
+    }
+
+    return cat; 
   }
 
   @Delete(':id')
