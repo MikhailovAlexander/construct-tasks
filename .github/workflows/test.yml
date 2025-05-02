@@ -44,11 +44,27 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
+      - name: Run tests and generate report
+        run: |
+          npm run test -- --ci --reporters=default --reporters=jest-junit
         env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-          POSTGRES_HOST: ${{ env.POSTGRES_HOST }}
-          POSTGRES_PORT: ${{ env.POSTGRES_PORT }}
-        run: npm run test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          JEST_JUNIT_OUTPUT: test-results/junit.xml
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/junit.xml
+
+      - name: Annotate test results
+        if: failure()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Jest Tests
+          path: test-results/junit.xml
+          reporter: jest-junit
