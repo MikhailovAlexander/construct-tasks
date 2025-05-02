@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  checks: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -62,7 +66,6 @@ jobs:
           path: test-results/junit.xml
 
       - name: Annotate test results
-        if: failure()
         uses: dorny/test-reporter@v1
         with:
           name: Jest Tests
