@@ -59,15 +59,9 @@ jobs:
           POSTGRES_PORT: 5432
           JEST_JUNIT_OUTPUT: test-results/junit.xml
 
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: test-results/junit.xml
-
       - name: Annotate test results
         uses: dorny/test-reporter@v1
         with:
-          name: Jest Tests
+          name: Jest Tests Results
           path: test-results/junit.xml
           reporter: jest-junit
